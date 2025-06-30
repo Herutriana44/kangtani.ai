@@ -1,0 +1,10 @@
+fastapi
+uvicorn[standard]
+httpx
+python-multipart
+# Audio transcription (optional, for Whisper)
+openai-whisper
+# File parsing
+PyPDF2
+pdfplumber
+python-docx 
