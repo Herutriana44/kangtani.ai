@@ -57,7 +57,8 @@ class OllamaClient:
         }
         
         try:
-            async with httpx.AsyncClient(timeout=30.0) as client:
+            # Updated timeout to 10 minutes (600 seconds)
+            async with httpx.AsyncClient(timeout=600.0) as client:
                 logger.info(f"Sending message to Ollama: {message[:100]}...")
                 response = await client.post(
                     self.chat_url,
@@ -77,8 +78,8 @@ class OllamaClient:
                     raise Exception("Invalid response format from Ollama")
                     
         except httpx.TimeoutException:
-            logger.error("Ollama request timed out")
-            raise Exception("Request to Ollama timed out. Please try again.")
+            logger.error("Ollama request timed out after 10 minutes")
+            raise Exception("Request to Ollama timed out after 10 minutes. Please try again.")
         except httpx.HTTPStatusError as e:
             logger.error(f"Ollama HTTP error: {e.response.status_code} - {e.response.text}")
             raise Exception(f"Ollama server error: {e.response.status_code}")
@@ -108,7 +109,8 @@ class OllamaClient:
         }
         
         try:
-            async with httpx.AsyncClient(timeout=30.0) as client:
+            # Updated timeout to 10 minutes (600 seconds)
+            async with httpx.AsyncClient(timeout=600.0) as client:
                 response = await client.post(
                     self.generate_url,
                     json=payload,
@@ -138,4 +140,4 @@ class OllamaClient:
                 return result.get("models", [])
         except Exception as e:
             logger.error(f"Error listing models: {e}")
-            return [] 
+            return []
