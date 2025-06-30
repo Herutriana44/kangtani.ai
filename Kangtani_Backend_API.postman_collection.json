@@ -1,0 +1,701 @@
+{
+    "info": {
+        "_postman_id": "kangtani-backend-api",
+        "name": "Kangtani.ai Backend API",
+        "description": "Comprehensive API collection for Kangtani.ai agricultural chatbot backend with debugging endpoints",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+        "_exporter_id": "kangtani-backend"
+    },
+    "item": [
+        {
+            "name": "Health & Status",
+            "item": [
+                {
+                    "name": "Root Endpoint",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                ""
+                            ]
+                        },
+                        "description": "Get basic API information and status"
+                    },
+                    "response": [],
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test(\"Status code is 200\", function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "",
+                                    "pm.test(\"Response has required fields\", function () {",
+                                    "    const response = pm.response.json();",
+                                    "    pm.expect(response).to.have.property('message');",
+                                    "    pm.expect(response).to.have.property('status');",
+                                    "    pm.expect(response).to.have.property('timestamp');",
+                                    "    pm.expect(response).to.have.property('version');",
+                                    "});",
+                                    "",
+                                    "pm.test(\"Status is running\", function () {",
+                                    "    const response = pm.response.json();",
+                                    "    pm.expect(response.status).to.eql('running');",
+                                    "});",
+                                    "",
+                                    "// Log response for debugging",
+                                    "console.log('Root endpoint response:', pm.response.json());"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Health Check",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/health",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "health"
+                            ]
+                        },
+                        "description": "Check backend health and system resources"
+                    },
+                    "response": [],
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test(\"Status code is 200\", function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "",
+                                    "pm.test(\"Response has health information\", function () {",
+                                    "    const response = pm.response.json();",
+                                    "    pm.expect(response).to.have.property('status');",
+                                    "    pm.expect(response).to.have.property('timestamp');",
+                                    "    pm.expect(response).to.have.property('system');",
+                                    "});",
+                                    "",
+                                    "pm.test(\"System resources are available\", function () {",
+                                    "    const response = pm.response.json();",
+                                    "    pm.expect(response.system).to.have.property('cpu_percent');",
+                                    "    pm.expect(response.system).to.have.property('memory_percent');",
+                                    "});",
+                                    "",
+                                    "// Store health status for other tests",
+                                    "const response = pm.response.json();",
+                                    "pm.environment.set('health_status', response.status);",
+                                    "pm.environment.set('cpu_usage', response.system.cpu_percent);",
+                                    "pm.environment.set('memory_usage', response.system.memory_percent);",
+                                    "",
+                                    "console.log('Health check response:', response);"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Debug Information",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/debug",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "debug"
+                            ]
+                        },
+                        "description": "Get detailed system debug information"
+                    },
+                    "response": [],
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test(\"Status code is 200\", function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "",
+                                    "pm.test(\"Debug info is comprehensive\", function () {",
+                                    "    const response = pm.response.json();",
+                                    "    pm.expect(response).to.have.property('timestamp');",
+                                    "    pm.expect(response).to.have.property('system');",
+                                    "    pm.expect(response.system).to.have.property('platform');",
+                                    "    pm.expect(response.system).to.have.property('python_version');",
+                                    "    pm.expect(response.system).to.have.property('memory');",
+                                    "});",
+                                    "",
+                                    "// Log detailed debug info",
+                                    "console.log('Debug information:', pm.response.json());"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ]
+                }
+            ],
+            "description": "Endpoints for checking backend health and system status"
+        },
+        {
+            "name": "Chat API",
+            "item": [
+                {
+                    "name": "Basic Chat",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "X-Client-Timestamp",
+                                "value": "{{timestamp}}"
+                            },
+                            {
+                                "key": "X-Client-Version",
+                                "value": "1.0.0"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"message\": \"What's the best crop for beginners?\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/chat",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "chat"
+                            ]
+                        },
+                        "description": "Send a basic chat message to the agricultural assistant"
+                    },
+                    "response": [],
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test(\"Status code is 200\", function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "",
+                                    "pm.test(\"Response has chat data\", function () {",
+                                    "    const response = pm.response.json();",
+                                    "    pm.expect(response).to.have.property('response');",
+                                    "    pm.expect(response).to.have.property('status');",
+                                    "    pm.expect(response).to.have.property('request_id');",
+                                    "    pm.expect(response).to.have.property('processing_time');",
+                                    "});",
+                                    "",
+                                    "pm.test(\"Response is not empty\", function () {",
+                                    "    const response = pm.response.json();",
+                                    "    pm.expect(response.response).to.not.be.empty;",
+                                    "    pm.expect(response.status).to.eql('success');",
+                                    "});",
+                                    "",
+                                    "pm.test(\"Processing time is reasonable\", function () {",
+                                    "    const response = pm.response.json();",
+                                    "    pm.expect(response.processing_time).to.be.a('number');",
+                                    "    pm.expect(response.processing_time).to.be.above(0);",
+                                    "    pm.expect(response.processing_time).to.be.below(30); // Should be under 30 seconds",
+                                    "});",
+                                    "",
+                                    "// Store response data for other tests",
+                                    "const response = pm.response.json();",
+                                    "pm.environment.set('last_request_id', response.request_id);",
+                                    "pm.environment.set('last_processing_time', response.processing_time);",
+                                    "",
+                                    "console.log('Chat response:', response);"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Agricultural Question",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"message\": \"How can I control pests organically in my vegetable garden?\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/chat",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "chat"
+                            ]
+                        },
+                        "description": "Ask about organic pest control methods"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Soil Health Question",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"message\": \"What are the best practices for improving soil health?\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/chat",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "chat"
+                            ]
+                        },
+                        "description": "Ask about soil health improvement"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Irrigation Question",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"message\": \"What irrigation system is best for tomatoes?\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/chat",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "chat"
+                            ]
+                        },
+                        "description": "Ask about irrigation systems"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Empty Message (Error Test)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"message\": \"\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/chat",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "chat"
+                            ]
+                        },
+                        "description": "Test error handling with empty message"
+                    },
+                    "response": [],
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test(\"Empty message should be handled gracefully\", function () {",
+                                    "    // This might return 200 with empty response or 400, both are acceptable",
+                                    "    pm.expect(pm.response.code).to.be.oneOf([200, 400, 422]);",
+                                    "});"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Long Message Test",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"message\": \"I have a large farm with multiple crops including tomatoes, peppers, corn, and beans. The soil is clay-based and we get moderate rainfall. I'm interested in sustainable farming practices and want to improve my yields while reducing chemical inputs. Can you provide comprehensive advice on crop rotation, organic fertilization, pest management, and irrigation systems that would work well for my situation?\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/chat",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "chat"
+                            ]
+                        },
+                        "description": "Test with a long, detailed agricultural question"
+                    },
+                    "response": []
+                }
+            ],
+            "description": "Chat API endpoints for agricultural questions and responses"
+        },
+        {
+            "name": "File Upload",
+            "item": [
+                {
+                    "name": "Upload Document",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                            "mode": "formdata",
+                            "formdata": [
+                                {
+                                    "key": "message",
+                                    "value": "Please analyze this document about soil testing",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "file",
+                                    "type": "file",
+                                    "src": []
+                                }
+                            ]
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/chat/file",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "chat",
+                                "file"
+                            ]
+                        },
+                        "description": "Upload a document for analysis (PDF, DOC, DOCX)"
+                    },
+                    "response": []
+                }
+            ],
+            "description": "File upload endpoints for document analysis"
+        },
+        {
+            "name": "Audio Upload",
+            "item": [
+                {
+                    "name": "Upload Audio",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                            "mode": "formdata",
+                            "formdata": [
+                                {
+                                    "key": "message",
+                                    "value": "Please transcribe and respond to this audio question",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "audio",
+                                    "type": "file",
+                                    "src": []
+                                }
+                            ]
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/chat/audio",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "chat",
+                                "audio"
+                            ]
+                        },
+                        "description": "Upload audio file for transcription and response"
+                    },
+                    "response": []
+                }
+            ],
+            "description": "Audio upload endpoints for voice-to-text functionality"
+        },
+        {
+            "name": "Performance Tests",
+            "item": [
+                {
+                    "name": "Concurrent Requests Test",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"message\": \"Performance test message\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/chat",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "chat"
+                            ]
+                        },
+                        "description": "Test for concurrent request handling"
+                    },
+                    "response": [],
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test(\"Response time is acceptable\", function () {",
+                                    "    pm.expect(pm.response.responseTime).to.be.below(5000); // Under 5 seconds",
+                                    "});",
+                                    "",
+                                    "pm.test(\"Status code is 200\", function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "",
+                                    "// Log performance metrics",
+                                    "console.log('Response time:', pm.response.responseTime + 'ms');",
+                                    "console.log('Processing time:', pm.response.json().processing_time + 's');"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Load Test - Multiple Requests",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"message\": \"Load test message {{$randomInt}}\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/chat",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "chat"
+                            ]
+                        },
+                        "description": "Load testing with random messages"
+                    },
+                    "response": []
+                }
+            ],
+            "description": "Performance and load testing endpoints"
+        },
+        {
+            "name": "Error Handling",
+            "item": [
+                {
+                    "name": "Invalid JSON",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"message\": \"test\",\n    \"invalid_field\": \"should cause error\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/chat",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "chat"
+                            ]
+                        },
+                        "description": "Test error handling with invalid JSON"
+                    },
+                    "response": [],
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test(\"Invalid JSON should be handled gracefully\", function () {",
+                                    "    // Should return 422 or 400 for validation errors",
+                                    "    pm.expect(pm.response.code).to.be.oneOf([200, 400, 422]);",
+                                    "});"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Missing Message Field",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"other_field\": \"test\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/chat",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "chat"
+                            ]
+                        },
+                        "description": "Test error handling with missing required field"
+                    },
+                    "response": [],
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test(\"Missing message field should return error\", function () {",
+                                    "    pm.expect(pm.response.code).to.be.oneOf([400, 422]);",
+                                    "});"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ]
+                }
+            ],
+            "description": "Error handling and edge case testing"
+        }
+    ],
+    "event": [
+        {
+            "listen": "prerequest",
+            "script": {
+                "type": "text/javascript",
+                "exec": [
+                    "// Set timestamp for requests",
+                    "pm.environment.set('timestamp', new Date().toISOString());",
+                    "",
+                    "// Log request details",
+                    "console.log('Making request to:', pm.request.url.toString());",
+                    "console.log('Method:', pm.request.method);",
+                    "console.log('Timestamp:', pm.environment.get('timestamp'));"
+                ]
+            }
+        },
+        {
+            "listen": "test",
+            "script": {
+                "type": "text/javascript",
+                "exec": [
+                    "// Global test setup",
+                    "pm.test(\"Response time is reasonable\", function () {",
+                    "    pm.expect(pm.response.responseTime).to.be.below(30000); // Under 30 seconds",
+                    "});",
+                    "",
+                    "pm.test(\"Response has content\", function () {",
+                    "    pm.expect(pm.response).to.not.be.empty;",
+                    "});",
+                    "",
+                    "// Log response details",
+                    "console.log('Response status:', pm.response.status);",
+                    "console.log('Response time:', pm.response.responseTime + 'ms');",
+                    "",
+                    "// Check for debug headers",
+                    "const processingTime = pm.response.headers.get('X-Processing-Time');",
+                    "const requestId = pm.response.headers.get('X-Request-ID');",
+                    "",
+                    "if (processingTime) {",
+                    "    console.log('Processing time:', processingTime + 's');",
+                    "    pm.environment.set('last_processing_time', processingTime);",
+                    "}",
+                    "",
+                    "if (requestId) {",
+                    "    console.log('Request ID:', requestId);",
+                    "    pm.environment.set('last_request_id', requestId);",
+                    "}"
+                ]
+            }
+        }
+    ],
+    "variable": [
+        {
+            "key": "base_url",
+            "value": "http://localhost:8000",
+            "type": "string"
+        },
+        {
+            "key": "timestamp",
+            "value": "",
+            "type": "string"
+        }
+    ]
+}

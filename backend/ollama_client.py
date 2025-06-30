@@ -6,7 +6,7 @@ from typing import Optional
 logger = logging.getLogger(__name__)
 
 class OllamaClient:
-    def __init__(self, base_url: str = "http://localhost:11434", model: str = "gemma3n"):
+    def __init__(self, base_url: str = "http://localhost:11434", model: str = "gemma3n:e2b"):
         self.base_url = base_url
         self.model = model
         self.chat_url = f"{base_url}/api/chat"
